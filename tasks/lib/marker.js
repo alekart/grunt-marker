@@ -154,8 +154,10 @@ Marker.prototype.markList = function (element) {
 
 			bullet.addClass('li li-bullet');
 			li.addClass('li li-content');
-			if (element.closest('.ol').length)
-				bullet.html(element.index() + 1);
+			if (element.closest('.ol').length){
+				var olli = element.index() + 1 + '.';
+				bullet.html(olli);
+			}
 			else {
 				attributes = this.getAttributes(element.closest('.ul'));
 				attr = attributes && attributes.hasOwnProperty('bullet') ? attributes.bullet : '•';
