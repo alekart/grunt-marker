@@ -14,7 +14,7 @@
     "tag",
     "mso"
   ],
-  "bundledDependencies": {
-    "cheerio": "^0.20.0"
+  "dependencies": {
+    "cheerio": "~0.20.0"
   }
 }
