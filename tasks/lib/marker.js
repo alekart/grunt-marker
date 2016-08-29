@@ -187,22 +187,22 @@ Marker.prototype.addMsoConditions = function (html) {
 	if (!table)
 		return $.html();
 	var tagHtml = cheerio.html(table),
-		clearDiv = '<div class="clear">&nbsp;</div>',
-		tableWrapOpen = '<rtw>',
-		tableWrapClose = '</rtw>';
+		//clearDiv = '',
+		//tableWrapOpen = '',
+		//tableWrapClose = '';
 
 	tagHtml = tagHtml
 	// open table/div then close div/table
 		.replace(/(<table(.*(responsive-table).*)><tbody>)/g,
 			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!----><div $2>\n<!-- <![endif]-->')
 		.replace(/(<\/tbody><\/table>)/g,
-			'<!--[if !mso]><!---->' + clearDiv + '</div><!-- <![endif]--><!--[if mso]>$1<![endif]-->')
+			'<!--[if !mso]><!----></div><!-- <![endif]--><!--[if mso]>$1<![endif]-->')
 
 	// open tr/div then close div/tr
 		.replace(/(<tr([^>]*)>)/g,
-			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!---->'+tableWrapOpen+'<div $2>\n<!-- <![endif]-->')
+			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!----><div $2>\n<!-- <![endif]-->')
 		.replace(/<\/tr>/g,
-			'<!--[if !mso]><!---->' + clearDiv + '</div>'+tableWrapClose+'<!-- <![endif]--><!--[if mso]></tr><![endif]-->')
+			'<!--[if !mso]><!----></div><!-- <![endif]--><!--[if mso]></tr><![endif]-->')
 
 	// open td/div then close div/td
 		.replace(/(<td([^>]*)>)/g,
@@ -211,12 +211,12 @@ Marker.prototype.addMsoConditions = function (html) {
 			'<!--[if !mso]><!---->\n</div><!-- <![endif]--><!--[if mso]></td><![endif]-->')
 
 	// remove spaces between comments, if div elements are in display: inline-block
-		.replace(/(<!\[endif]-->[^<]*<!--\[if mso]>)/g, "<![endif]--><!--[if mso]>")
+		.replace(/(<!\[endif]-->[^<]*<!--\[if mso]>)/g, "<![endif]--><!--[if mso]>");
 
 	// place row wrapper to cancel float propagation on the Gmail App (Android)
-		.replace(/<rtw>/g, '<table class="rtw"><tr><td>').replace(/<\/rtw>/g, '</td></tr></table>');
+	//	.replace(/<rtw>/g, '<table class="rtw"><tr><td>').replace(/<\/rtw>/g, '</td></tr></table>');
 
-	tagHtml += clearDiv; // style this div to clear the float arguments if your divs are in float
+	//tagHtml += clearDiv; // style this div to clear the float arguments if your divs are in float
 
 	table.replaceWith(tagHtml);
 
