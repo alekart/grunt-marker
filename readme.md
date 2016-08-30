@@ -1,3 +1,3 @@
-# grunt-marker v0.1.4
+# grunt-marker v0.1.5
 
-Light and more "responsive" module inspired by ZURB Inky
+Inspired by ZURB Inky, light version
