@@ -29,7 +29,7 @@ Marker.prototype.markThemUp = function (file) {
 		elem.replaceWith(newHtml);
 	}
 
-	return $.html;
+	return $.html();
 };
 
 /**
