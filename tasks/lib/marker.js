@@ -174,56 +174,6 @@ Marker.prototype.markList = function (element) {
 };
 
 /**
- * Adds conditional comments on table parts
- * @param html (string)
- * @param tag (string)
- * @returns {string}
- */
-Marker.prototype.addMsoConditions = function (html) {
-	var $ = cheerio.load(html),
-		table = $('table.responsive-table:not(.mso)');
-	table.addClass('mso');
-
-	if (!table)
-		return $.html();
-	var tagHtml = cheerio.html(table),
-		//clearDiv = '',
-		//tableWrapOpen = '',
-		//tableWrapClose = '';
-
-	tagHtml = tagHtml
-	// open table/div then close div/table
-		.replace(/(<table(.*(responsive-table).*)><tbody>)/g,
-			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!----><div $2>\n<!-- <![endif]-->')
-		.replace(/(<\/tbody><\/table>)/g,
-			'<!--[if !mso]><!----></div><!-- <![endif]--><!--[if mso]>$1<![endif]-->')
-
-	// open tr/div then close div/tr
-		.replace(/(<tr([^>]*)>)/g,
-			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!----><div $2>\n<!-- <![endif]-->')
-		.replace(/<\/tr>/g,
-			'<!--[if !mso]><!----></div><!-- <![endif]--><!--[if mso]></tr><![endif]-->')
-
-	// open td/div then close div/td
-		.replace(/(<td([^>]*)>)/g,
-			'<!--[if mso]><td$2><![endif]--><!--[if !mso]><!----><div$2>\n<!-- <![endif]-->')
-		.replace(/<\/td>/g,
-			'<!--[if !mso]><!---->\n</div><!-- <![endif]--><!--[if mso]></td><![endif]-->')
-
-	// remove spaces between comments, if div elements are in display: inline-block
-		.replace(/(<!\[endif]-->[^<]*<!--\[if mso]>)/g, "<![endif]--><!--[if mso]>");
-
-	// place row wrapper to cancel float propagation on the Gmail App (Android)
-	//	.replace(/<rtw>/g, '<table class="rtw"><tr><td>').replace(/<\/rtw>/g, '</td></tr></table>');
-
-	//tagHtml += clearDiv; // style this div to clear the float arguments if your divs are in float
-
-	table.replaceWith(tagHtml);
-
-	return $.html();
-};
-
-/**
  * Detects if element is a responsive table or is a part of a responsive table
  * and adds some classes to mark them as "responsive" to be able to style them later
  * @param element (cheerio object)
