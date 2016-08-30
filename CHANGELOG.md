@@ -1,3 +1,6 @@
+#0.1.6
+- fix the marker html() method after removing the comments
+
 #0.1.5
 - remove conditional comments adding moved to another module
 
