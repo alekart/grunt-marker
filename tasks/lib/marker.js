@@ -7,6 +7,7 @@ function Marker(options) {
 
 	// ignored attributes that should not be added to the replacement tag
 	this.ignoreAttributes = ['responsive', 'small', 'large', 'bullet', 'bullet-alt'];
+	this.allowedAttributes = ['id', 'class', 'style', 'href'];
 }
 
 /**
@@ -29,7 +30,7 @@ Marker.prototype.markThemUp = function (file) {
 		elem.replaceWith(newHtml);
 	}
 
-	return $.html();
+	return this.addMsoConditions($.html());
 };
 
 /**
@@ -43,9 +44,6 @@ Marker.prototype.markToTag = function (element) {
 		html;
 
 	switch (tag) {
-		case 'container':
-			return self.tagMarker(element);
-
 		case 'row':
 			element.addClass('row');
 			return self.tagMarker(element);
@@ -54,11 +52,14 @@ Marker.prototype.markToTag = function (element) {
 			element.addClass('column');
 			return self.markColumn(element);
 
+		case 'button':
+			element.addClass('btn');
+			return self.markButton(element);
+
 		case 'ul':
 		case 'ol':
 		case 'li':
 			return self.markList(element);
-
 
 		default:
 			// should never get here
@@ -127,6 +128,31 @@ Marker.prototype.markColumn = function (element) {
 	return this.tagMarker(element);
 };
 
+Marker.prototype.markButton = function (element) {
+	var attributes = this.getAttributes(element),
+		content = element.html();
+
+	// add all attributes from element to the replacement tag except the ignored ones
+	//for (var attr in attributes) {
+	//	if (attributes.hasOwnProperty(attr) && this.ignoreAttributes.indexOf(attr) == -1) {
+	//		$.attr(attr, attributes[attr]);
+	//	}
+	//}
+
+	var btnHtml = '<!--[if mso]>' +
+		'<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" '+ this.getAttrsAsText(element, true) +'>' +
+		'<w:anchorlock/>' +
+		'<center>' +
+		'<![endif]-->' +
+		'<a '+ this.getAttrsAsText(element) +'>' + content + '</a>' +
+		'<!--[if mso]>' +
+		'</center>' +
+		'</v:roundrect>' +
+		'<![endif]-->';
+
+	return btnHtml;
+};
+
 Marker.prototype.markList = function (element) {
 	var markerName = element[0].name,
 		attributes = this.getAttributes(element),
@@ -154,7 +180,7 @@ Marker.prototype.markList = function (element) {
 
 			bullet.addClass('li li-bullet');
 			li.addClass('li li-content');
-			if (element.closest('.ol').length){
+			if (element.closest('.ol').length) {
 				var olli = element.index() + 1 + '.';
 				bullet.html(olli);
 			}
@@ -174,18 +200,56 @@ Marker.prototype.markList = function (element) {
 };
 
 /**
+ * Adds conditional comments on table parts
+ * @param html (string)
+ * @param tag (string)
+ * @returns {string}
+ */
+Marker.prototype.addMsoConditions = function (html) {
+	var $ = cheerio.load(html),
+		table = $('table.responsive-table:not(.mso)');
+	table.addClass('mso');
+
+	if (!table)
+		return $.html();
+	var tagHtml = cheerio.html(table);
+
+	tagHtml = tagHtml
+	// open table/div then close div/table
+		.replace(/(<table(.*(responsive-table).*)><tbody>)/g,
+			'<!--[if !mso]><!----><div $2>\n<!-- <![endif]--><!--[if mso]>$1<![endif]-->')
+		.replace(/(<\/tbody><\/table>)/g,
+			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!----></div><!-- <![endif]-->')
+
+		// comment tr for the mso
+		.replace(/(<tr[^>]*>)/g,
+			'<!--[if mso]>$1<![endif]-->')
+		.replace(/<\/tr>/g,
+			'<!--[if mso]></tr><![endif]-->')
+
+		// open td/div then close div/td
+		.replace(/(<td([^>]*)>)/g,
+			'<!--[if mso]><td$2><![endif]--><!--[if !mso]><!----><div$2>\n<!-- <![endif]-->')
+		.replace(/<\/td>/g,
+			'<!--[if !mso]><!---->\n</div><!-- <![endif]--><!--[if mso]></td><![endif]-->')
+
+		// remove spaces between comments, if div elements are in display: inline-block
+		.replace(/(<!\[endif]-->[^<]*<!--\[if mso]>)/g, "<![endif]--><!--[if mso]>");
+
+	table.replaceWith(tagHtml);
+
+	return $.html();
+};
+
+/**
  * Detects if element is a responsive table or is a part of a responsive table
  * and adds some classes to mark them as "responsive" to be able to style them later
  * @param element (cheerio object)
  * @returns {boolean}
  */
 Marker.prototype.markResponsive = function (element) {
-	if (element.is('container') && element.is('[responsive]')) {
-		element.addClass('responsive responsive-table');
-		return true;
-	}
-	else if (element.is('row') && element.closest('table').is('.responsive-table')) {
-		element.addClass('responsive');
+	if (element.is('row') && element.is('[responsive]')) {
+		element.addClass('responsive-table');
 		return true;
 	}
 	else if (element.is('column') && element.closest('table').is('.responsive-table')) {
@@ -203,5 +267,27 @@ Marker.prototype.markResponsive = function (element) {
 Marker.prototype.getAttributes = function (element) {
 	return element.get(0).attribs;
 };
+
+Marker.prototype.getAttrsAsText = function (element, all) {
+	var self = this,
+		attrs = this.getAttributes(element),
+		text = '';
+
+	var isAllowedAttribute = function (key) {
+		if (all) {
+			return true;
+		}
+		return self.allowedAttributes.indexOf(key) !== -1;
+	};
+
+	for (var key in attrs) {
+		if (attrs.hasOwnProperty(key) && isAllowedAttribute(key)) {
+			text += key + '="' + attrs[key] + '" ';
+		}
+	}
+
+	return text;
+};
+
 
 module.exports = Marker;

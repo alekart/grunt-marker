@@ -1,3 +1,8 @@
+#0.1.7
+- no more container tag: now use `<row><column></column></row>` instead. Ros is now transformed into the table 
+- conditional comments are back and fixed
+- added <button> tag transformation into bulletproof email html button
+
 #0.1.6
 - fix the marker html() method after removing the comments
 
