@@ -1,3 +1,6 @@
+#0.1.8
+- mega fix for conditional tables. No more repetition
+
 #0.1.7
 - no more container tag: now use `<row><column></column></row>` instead. Ros is now transformed into the table 
 - conditional comments are back and fixed
