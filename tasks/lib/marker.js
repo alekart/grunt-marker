@@ -16,7 +16,8 @@ function Marker(options) {
  * @returns {string} ready to write into a file html code
  */
 Marker.prototype.markThemUp = function (file) {
-	var tags = this.components.join(', '),
+	var self = this,
+		tags = this.components.join(', '),
 		$ = cheerio.load(file);
 
 	this.html = $;
@@ -30,7 +31,14 @@ Marker.prototype.markThemUp = function (file) {
 		elem.replaceWith(newHtml);
 	}
 
-	return this.addMsoConditions($.html());
+	// make tables responsive if needed
+	var tables = $('table.responsive-table');
+	tables.each(function (index, item) {
+		var $item = cheerio(item);
+		$item.replaceWith(self.addMsoConditions($item));
+	});
+
+	return $.html();
 };
 
 /**
@@ -205,17 +213,12 @@ Marker.prototype.markList = function (element) {
  * @param tag (string)
  * @returns {string}
  */
-Marker.prototype.addMsoConditions = function (html) {
-	var $ = cheerio.load(html),
-		table = $('table.responsive-table:not(.mso)');
+Marker.prototype.addMsoConditions = function (table) {
 	table.addClass('mso');
-
-	if (!table)
-		return $.html();
 	var tagHtml = cheerio.html(table);
 
 	tagHtml = tagHtml
-	// open table/div then close div/table
+		// open table/div then close div/table
 		.replace(/(<table(.*(responsive-table).*)><tbody>)/g,
 			'<!--[if !mso]><!----><div $2>\n<!-- <![endif]--><!--[if mso]>$1<![endif]-->')
 		.replace(/(<\/tbody><\/table>)/g,
@@ -236,9 +239,7 @@ Marker.prototype.addMsoConditions = function (html) {
 		// remove spaces between comments, if div elements are in display: inline-block
 		.replace(/(<!\[endif]-->[^<]*<!--\[if mso]>)/g, "<![endif]--><!--[if mso]>");
 
-	table.replaceWith(tagHtml);
-
-	return $.html();
+	return tagHtml;
 };
 
 /**
