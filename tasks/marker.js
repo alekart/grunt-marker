@@ -11,18 +11,17 @@ module.exports = function (grunt) {
 	grunt.registerMultiTask('marker', 'Light and more "responsive" module inspired by ZURB inky', function () {
 
 		var options = this.options({
-			columns: 4,
+			columns: 12,
 			components: [
-				'container',
 				'row',
 				'column',
+				'button',
 				'ul',
 				'ol',
 				'li'
 			],
 			templates: {
-				container: '<table><tbody>%content%</tbody></table>',
-				row: '<tr>%content%</tr>',
+				row: '<table><tbody><tr>%content%</tr></tbody></table>',
 				column: '<td>%content%</td>',
 				ul: '<table><tbody>%content%</tbody></table>',
 				ol: '<table><tbody>%content%</tbody></table>',

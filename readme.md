@@ -1,3 +1,3 @@
-# grunt-marker v0.1.6
+# grunt-marker
 
-Inspired by ZURB Inky, light version
+Inspired by ZURB Inky, light, responsive and bulletproof version.
