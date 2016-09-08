@@ -209,37 +209,76 @@ Marker.prototype.markList = function (element) {
 
 /**
  * Adds conditional comments on table parts
- * @param html (string)
- * @param tag (string)
+ * @param table (DOM)
  * @returns {string}
  */
 Marker.prototype.addMsoConditions = function (table) {
 	table.addClass('mso');
-	var tagHtml = cheerio.html(table);
+	var $ = cheerio;
 
-	tagHtml = tagHtml
-		// open table/div then close div/table
+	// to avoid DOM selections problems we review the element from the inside
+
+	// first we replace all td.columns directly depending on the .responsive-table (this table)
+	var columns = table.find('> tbody > tr > td.column');
+
+	columns.each(function (index, item) {
+		var $item = $(item),
+			content = $item.html(); // get the column HTML content, whatever it is we don't need to proceed it
+
+		// remove the content to not alter the tables inside the column
+		$item.html('%content%');
+
+		console.error($.html($item));
+
+
+		var transformed = $.html($item)
+			.replace(/(<td([^>]*)>)/g,
+				'<!--[if mso]><td$2><![endif]-->\n<!--[if !mso]><!----><div$2><!-- <![endif]-->')
+			.replace(/<\/td>/g,
+				'<!--[if !mso]><!----></div><!-- <![endif]-->\n<!--[if mso]></td><![endif]-->')
+			.replace('%content%', content); // replace the column content back
+
+		$item.replaceWith(transformed); // replace th item with the transformed html
+	});
+
+	// then we do the same with tr's
+	var rows = table.find('> tbody > tr');
+
+	rows.each(function (index, item) {
+		var $item = $(item),
+			content = $item.html();
+
+		// remove the content to not alter the tables inside the column
+		$item.html('%content%');
+
+		var transformed = $.html($item)
+			.replace(/(<tr[^>]*>)/g,
+				'<!--[if mso]>$1<![endif]-->')
+			.replace(/<\/tr>/g,
+				'<!--[if mso]></tr><![endif]-->')
+			.replace('%content%', content);
+
+		$item.replaceWith(transformed);
+	});
+
+	// and the last step, the table itself should be altered with comments
+	var content = table.find('> tbody').html();
+
+	// remove the content to not alter the tables inside the column
+	table.find('> tbody').html('%content%');
+
+	var transformedTable = $.html(table)
 		.replace(/(<table(.*(responsive-table).*)><tbody>)/g,
 			'<!--[if !mso]><!----><div $2>\n<!-- <![endif]--><!--[if mso]>$1<![endif]-->')
 		.replace(/(<\/tbody><\/table>)/g,
 			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!----></div><!-- <![endif]-->')
+		.replace('%content%', content);
 
-		// comment tr for the mso
-		.replace(/(<tr[^>]*>)/g,
-			'<!--[if mso]>$1<![endif]-->')
-		.replace(/<\/tr>/g,
-			'<!--[if mso]></tr><![endif]-->')
+	table.replaceWith(transformedTable);
 
-		// open td/div then close div/td
-		.replace(/(<td([^>]*)>)/g,
-			'<!--[if mso]><td$2><![endif]--><!--[if !mso]><!----><div$2>\n<!-- <![endif]-->')
-		.replace(/<\/td>/g,
-			'<!--[if !mso]><!---->\n</div><!-- <![endif]--><!--[if mso]></td><![endif]-->')
+	// TODO: make it an function to avoid repeating the same procedure again and again :D => simplify the code, don't repeat yourself
 
-		// remove spaces between comments, if div elements are in display: inline-block
-		.replace(/(<!\[endif]-->[^<]*<!--\[if mso]>)/g, "<![endif]--><!--[if mso]>");
-
-	return tagHtml;
+	return $.html(table);
 };
 
 /**

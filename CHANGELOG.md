@@ -1,3 +1,6 @@
+#0.1.9
+- **fix** Do not alter nested tables inside a responsive table
+
 #0.1.8
 - mega fix for conditional tables. No more repetition
 
