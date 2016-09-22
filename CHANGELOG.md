@@ -1,3 +1,6 @@
+#0.1.10
+- **fix** The button element HTML structure reviewed and fixed
+
 #0.1.9
 - **fix** Do not alter nested tables inside a responsive table
 

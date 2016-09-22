@@ -1,6 +1,6 @@
 {
   "name": "grunt-marker",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Light and more 'responsive' module inspired by ZURB inky",
   "main": "marker.js",
   "author": "Aleksei Polechin (http://alek.be)",

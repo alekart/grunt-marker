@@ -147,16 +147,14 @@ Marker.prototype.markButton = function (element) {
 	//	}
 	//}
 
-	var btnHtml = '<!--[if mso]>' +
-		'<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" '+ this.getAttrsAsText(element, true) +'>' +
+	var btnHtml = '<div ' + this.getAttrbuteAsText(element, ["class", "id", "style"]) + '><!--[if mso]>' +
+		'<v:roundrect btnvlm xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" ' + this.getAttrsAsText(element, true) + '>' +
 		'<w:anchorlock/>' +
-		'<center>' +
-		'<![endif]-->' +
-		'<a '+ this.getAttrsAsText(element) +'>' + content + '</a>' +
-		'<!--[if mso]>' +
-		'</center>' +
+		'<center>' + content + '</center>' +
 		'</v:roundrect>' +
-		'<![endif]-->';
+		'<![endif]-->' +
+		'<a ' + this.getAttrbuteAsText(element, "href") + '>' + content + '</a>' +
+		'</div>';
 
 	return btnHtml;
 };
@@ -308,6 +306,45 @@ Marker.prototype.getAttributes = function (element) {
 	return element.get(0).attribs;
 };
 
+Marker.prototype.getAttributeValue = function (element, attr) {
+	var attributes = this.getAttributes(element);
+	if (attributes.hasOwnProperty(attr)) {
+		return attributes[attr];
+	}
+	return null;
+};
+
+/**
+ * Get specified attributes as text
+ * @param element
+ * @param attr {string|object}
+ * @returns {*}
+ */
+Marker.prototype.getAttrbuteAsText = function (element, attr) {
+	var value, text ="",
+		self = this;
+
+	if(typeof attr == "string"){
+		value = this.getAttributeValue(element, attr);
+		return !value ? '' : attr + '="' + this.getAttributeValue(element, attr) + '"';
+	}
+	else {
+		attr.forEach(function(attribute){
+			value = self.getAttributeValue(element, attribute);
+			text += !value ? '' : attribute + '="' + self.getAttributeValue(element, attribute) + '"';
+		});
+		return text;
+	}
+};
+
+/**
+ * Get attributes as text
+ * if second parameter is true it will take all the attribues
+ * even if they are not in the isAllowedAttribute
+ * @param element
+ * @param all
+ * @returns {string}
+ */
 Marker.prototype.getAttrsAsText = function (element, all) {
 	var self = this,
 		attrs = this.getAttributes(element),
