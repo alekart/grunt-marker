@@ -18,7 +18,7 @@ function Marker(options) {
 Marker.prototype.markThemUp = function (file) {
 	var self = this,
 		tags = this.components.join(', '),
-		$ = cheerio.load(file);
+		$ = cheerio.load(file, {lowerCaseAttributeNames:false, decodeEntities: false});
 
 	this.html = $;
 

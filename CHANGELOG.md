@@ -1,3 +1,6 @@
+#0.1.11
+- **fix** Avoid the htmlentities to be encoded
+
 #0.1.10
 - **fix** The button element HTML structure reviewed and fixed
 
