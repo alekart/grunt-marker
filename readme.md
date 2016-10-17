@@ -20,12 +20,12 @@ Marker module simplifies the way you write code for e-mails. It introduces a sim
 ```
 Output: 
 ```html
-<table>
+<table class="row">
 	<tbody>
-		<tr>
-			<td>column content</td>
-			<td>column content</td>
-		<tr>
+	<tr>
+		<td class="column first">column content</td>
+		<td class="column last">column content</td>
+	</tr>
 	</tbody>
 </table>
 ```
