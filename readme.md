@@ -4,6 +4,12 @@ Inspired by ZURB Inky, light, responsive and bulletproof version.
 ---
 Marker module simplifies the way you write code for e-mails. It introduces a simplified markup that is converted to the e-mail friendly HTML.
 
+- [Tables](https://github.com/alekart/grunt-marker#tables)
+- [Lists](https://github.com/alekart/grunt-marker#lists)
+- [Buttons](https://github.com/alekart/grunt-marker#buttons)
+
+---
+
 ## Tables
 
 ```html
