@@ -1,3 +1,6 @@
+#0.1.12
+- fix useless debug output while processing
+
 #0.1.11
 - **fix** Avoid the htmlentities to be encoded
 

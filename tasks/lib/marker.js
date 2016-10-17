@@ -226,9 +226,6 @@ Marker.prototype.addMsoConditions = function (table) {
 		// remove the content to not alter the tables inside the column
 		$item.html('%content%');
 
-		console.error($.html($item));
-
-
 		var transformed = $.html($item)
 			.replace(/(<td([^>]*)>)/g,
 				'<!--[if mso]><td$2><![endif]-->\n<!--[if !mso]><!----><div$2><!-- <![endif]-->')
