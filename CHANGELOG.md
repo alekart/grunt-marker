@@ -1,3 +1,6 @@
+#0.1.13
+- fix #3 dyslexic problem :D
+
 #0.1.12
 - fix useless debug output while processing
 
