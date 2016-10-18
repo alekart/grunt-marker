@@ -125,3 +125,46 @@ Output:
 	<a href="#">btn-default</a>
 </div>
 ```
+
+### VML RoundRect Atributes
+- **colorfill** {hex color}: sets the background color of the v:roundrect element
+- **arcsize** {%}: sets the corner radius of the v:roundrect element (in percents)
+- **stroked="false"**: removes the border of the v:roundrect element
+- **strokecolor** {hex color}: sets the color of the border of the v:roundrect element
+- **strokeweight** {pt}: border width in points (pt)
+
+**Full doc: https://msdn.microsoft.com/en-us/library/documentformat.openxml.vml.roundrectangle(v=office.14).aspx**
+
+### Button SCSS:
+```scss
+.btn {
+	[btnvml] {
+		height: $height;
+		width: $width;
+		font-size: $font-size;
+		v-text-anchor: middle;
+	}
+	center {
+		font-family: $font-family;
+		font-weight: $btn-font-weight;
+		color: $btn-default-color;;
+	}
+	a {
+		display: inline-block;
+		width: $width;
+		padding: $padding-vertical $padding-horizontal;
+		border-radius: $border-radius;
+		font-size: $font-size;
+		line-height: $height;
+		color: $btn-default-color;
+		font-family: $font-family;
+		font-weight: $btn-font-weight;
+		text-align: center;
+		text-decoration: none;
+		-webkit-text-size-adjust: none;
+		mso-hide: all;
+		background-color: $background;
+	}
+}
+
+```
