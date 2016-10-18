@@ -148,7 +148,7 @@ Marker.prototype.markButton = function (element) {
 	//}
 
 	var btnHtml = '<div ' + this.getAttrbuteAsText(element, ["class", "id", "style"]) + '><!--[if mso]>' +
-		'<v:roundrect btnvlm xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" ' + this.getAttrsAsText(element, true) + '>' +
+		'<v:roundrect btnvml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" ' + this.getAttrsAsText(element, true) + '>' +
 		'<w:anchorlock/>' +
 		'<center>' + content + '</center>' +
 		'</v:roundrect>' +
