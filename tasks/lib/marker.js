@@ -7,6 +7,8 @@ function Marker(options) {
 
 	// ignored attributes that should not be added to the replacement tag
 	this.ignoreAttributes = ['responsive', 'small', 'large', 'bullet', 'bullet-alt'];
+
+	// allowed attributes to copy on an element by default if not specified
 	this.allowedAttributes = ['id', 'class', 'style', 'href'];
 }
 
@@ -18,7 +20,7 @@ function Marker(options) {
 Marker.prototype.markThemUp = function (file) {
 	var self = this,
 		tags = this.components.join(', '),
-		$ = cheerio.load(file, {lowerCaseAttributeNames:false, decodeEntities: false});
+		$ = cheerio.load(file, {lowerCaseAttributeNames: false, decodeEntities: false});
 
 	this.html = $;
 
@@ -60,7 +62,7 @@ Marker.prototype.markToTag = function (element) {
 			element.addClass('column');
 			return self.markColumn(element);
 
-		case 'button':
+		case 'btn-vml':
 			element.addClass('btn');
 			return self.markButton(element);
 
@@ -147,8 +149,8 @@ Marker.prototype.markButton = function (element) {
 	//	}
 	//}
 
-	var btnHtml = '<div ' + this.getAttrbuteAsText(element, ["class", "id", "style"]) + '><!--[if mso]>' +
-		'<v:roundrect btnvml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" ' + this.getAttrsAsText(element, true) + '>' +
+	var btnHtml = '<div ' + this.getAttrbuteAsText(element, "class, id, style") + '><!--[if mso]>' +
+		'<v:roundrect btnvml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" ' + this.getAttrbuteAsText(element, "all", "class, id, style") + '>' +
 		'<w:anchorlock/>' +
 		'<center>' + content + '</center>' +
 		'</v:roundrect>' +
@@ -313,55 +315,49 @@ Marker.prototype.getAttributeValue = function (element, attr) {
 
 /**
  * Get specified attributes as text
- * @param element
- * @param attr {string|object}
- * @returns {*}
+ * @param element // the element to get the attributes from
+ * @param attributes {String|Object} // will inlude allowed attributes || all attributes || scpecified ("id, class" | ["id", "class"] | "id")
+ * @param exclusions {String|Object} // will exclude those attributes ("id, class" | ["id", "class"] | "id")
+ * @returns {String}
  */
-Marker.prototype.getAttrbuteAsText = function (element, attr) {
-	var value, text ="",
-		self = this;
+Marker.prototype.getAttrbuteAsText = function (element, attributes, exclusions) {
+	var value, text = "",
+		self = this,
+		exclude = [],
+		attr = [];
 
-	if(typeof attr == "string"){
-		value = this.getAttributeValue(element, attr);
-		return !value ? '' : attr + '="' + this.getAttributeValue(element, attr) + '"';
+	// if exclusions are defined as string
+	// remove trailing spaces and split it (by comma) into array
+	if (typeof exclusions == "string") {
+		exclude = (exclusions.replace(' ', '')).split(',');
 	}
-	else {
-		attr.forEach(function(attribute){
+
+	// if attributes is
+	// - undefined or "" => put all attributes that are in the allowedList
+	// - "all" => put all attributes, whatever it is
+	if (!attributes || attributes == "" || attributes == "all") {
+		var attrs = self.getAttributes(element);
+		for (var key in attrs) {
+			if (attrs.hasOwnProperty(key) && ( self.allowedAttributes.indexOf(key) !== -1 || attributes == "all" )) {
+				attr.push(key);
+			}
+		}
+	}
+	// if is string, remove trailing spaces and split it (by comma) into array
+	else if (typeof attributes == "string") {
+		attr = (attributes.replace(' ', '')).split(',');
+	}
+
+	// for each attribute name in the attr array
+	// get the value and put it in the text String one after each other
+	attr.forEach(function (attribute) {
+		if (exclude.indexOf(attribute) === -1) {
 			value = self.getAttributeValue(element, attribute);
-			text += !value ? '' : attribute + '="' + self.getAttributeValue(element, attribute) + '"';
-		});
-		return text;
-	}
-};
-
-/**
- * Get attributes as text
- * if second parameter is true it will take all the attribues
- * even if they are not in the isAllowedAttribute
- * @param element
- * @param all
- * @returns {string}
- */
-Marker.prototype.getAttrsAsText = function (element, all) {
-	var self = this,
-		attrs = this.getAttributes(element),
-		text = '';
-
-	var isAllowedAttribute = function (key) {
-		if (all) {
-			return true;
+			text += !value ? '' : attribute + '="' + self.getAttributeValue(element, attribute) + '" ';
 		}
-		return self.allowedAttributes.indexOf(key) !== -1;
-	};
-
-	for (var key in attrs) {
-		if (attrs.hasOwnProperty(key) && isAllowedAttribute(key)) {
-			text += key + '="' + attrs[key] + '" ';
-		}
-	}
+	});
 
 	return text;
 };
-
 
 module.exports = Marker;

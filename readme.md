@@ -116,7 +116,7 @@ Bulletproof buttons using old Microsoft VLM vectors (depreciated in web today bu
 
 Code:
 ```html
-<button class="btn btn-default" href="#" collorfill="#CCCCCC">btn-default</button>
+<btn-vml class="btn btn-default" href="#" collorfill="#CCCCCC">btn-default</btn-vml>
 ```
 Output: 
 ```html
