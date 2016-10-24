@@ -15,7 +15,7 @@ module.exports = function (grunt) {
 			components: [
 				'row',
 				'column',
-				'button',
+				'btn-vml',
 				'ul',
 				'ol',
 				'li'

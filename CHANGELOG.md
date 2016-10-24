@@ -1,3 +1,8 @@
+#0.2.0
+- important **breaking** change: <button> tag is now <btn-vml>
+- internal: remove `getAttrsAsText` method
+- internal: refactor and improve `getAttrbuteAsText` method du to removing the `getAttrsAsText` method
+
 #0.1.13
 - fix #3 dyslexic problem :D
 
