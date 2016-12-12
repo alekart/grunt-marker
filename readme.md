@@ -127,7 +127,8 @@ Output:
 ```
 
 ### VML RoundRect Atributes
-- **colorfill** {hex color}: sets the background color of the v:roundrect element
+- **fillcolor** {hex color}: sets the background color of the v:roundrect element
+- **filled="f"** : no fill color
 - **arcsize** {%}: sets the corner radius of the v:roundrect element (in percents)
 - **stroked="false"**: removes the border of the v:roundrect element
 - **strokecolor** {hex color}: sets the color of the border of the v:roundrect element
