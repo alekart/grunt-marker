@@ -149,12 +149,12 @@ Marker.prototype.markButton = function (element) {
 	//	}
 	//}
 
-	var btnHtml = '<div ' + this.getAttrbuteAsText(element, "class, id, style") + '><!--[if mso]>' +
+	var btnHtml = '<div ' + this.getAttrbuteAsText(element, "class, id, style") + '> <!--[if mso]>' +
 		'<v:roundrect btnvml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" ' + this.getAttrbuteAsText(element, "all", "class, id, style") + '>' +
 		'<w:anchorlock/>' +
 		'<center>' + content + '</center>' +
 		'</v:roundrect>' +
-		'<![endif]-->' +
+		'<![endif]--> ' +
 		'<a ' + this.getAttrbuteAsText(element, "href") + '>' + content + '</a>' +
 		'</div>';
 
@@ -230,11 +230,9 @@ Marker.prototype.addMsoConditions = function (table) {
 
 		var transformed = $.html($item)
 			.replace(/(<td([^>]*)>)/g,
-				'<!--[if mso]><td$2><![endif]-->\n<!--[if !mso]><!---->\n'+
-				'<div$2>\n'+
-				'<!-- <![endif]-->')
+				'<!--[if mso]> <td$2> <![endif]-->\n<!--[if !mso]><!----> <div$2> <!-- <![endif]-->')
 			.replace(/<\/td>/g,
-				'<!--[if !mso]><!----></div><!-- <![endif]-->\n<!--[if mso]></td><![endif]-->')
+				'<!--[if !mso]><!----> </div> <!-- <![endif]-->\n<!--[if mso]> </td> <![endif]-->')
 			.replace('%content%', content); // replace the column content back
 
 		$item.replaceWith(transformed); // replace th item with the transformed html
@@ -252,9 +250,9 @@ Marker.prototype.addMsoConditions = function (table) {
 
 		var transformed = $.html($item)
 			.replace(/(<tr[^>]*>)/g,
-				'<!--[if mso]>$1<![endif]-->')
+				'<!--[if mso]> $1 <![endif]-->')
 			.replace(/<\/tr>/g,
-				'<!--[if mso]></tr><![endif]-->')
+				'<!--[if mso]> </tr> <![endif]-->')
 			.replace('%content%', content);
 
 		$item.replaceWith(transformed);
@@ -268,15 +266,9 @@ Marker.prototype.addMsoConditions = function (table) {
 
 	var transformedTable = $.html(table)
 		.replace(/(<table(.*(responsive-table).*)><tbody>)/g,
-			'<!--[if !mso]><!---->\n' +
-			'<div $2>\n' +
-			'<!-- <![endif]--><!--[if mso]>\n'+
-			'$1\n' +
-			'<![endif]-->')
+			'<!--[if !mso]><!----> <div $2> \n<!-- <![endif]--><!--[if mso]> $1 <![endif]-->')
 		.replace(/(<\/tbody><\/table>)/g,
-			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!---->\n' +
-			'</div>\n' +
-			'<!-- <![endif]-->')
+			'<!--[if mso]> $1 <![endif]--><!--[if !mso]><!----> </div> <!-- <![endif]-->')
 		.replace('%content%', content);
 
 	table.replaceWith(transformedTable);
