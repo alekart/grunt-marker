@@ -230,7 +230,9 @@ Marker.prototype.addMsoConditions = function (table) {
 
 		var transformed = $.html($item)
 			.replace(/(<td([^>]*)>)/g,
-				'<!--[if mso]><td$2><![endif]-->\n<!--[if !mso]><!----><div$2><!-- <![endif]-->')
+				'<!--[if mso]><td$2><![endif]-->\n<!--[if !mso]><!---->\n'+
+				'<div$2>\n'+
+				'<!-- <![endif]-->')
 			.replace(/<\/td>/g,
 				'<!--[if !mso]><!----></div><!-- <![endif]-->\n<!--[if mso]></td><![endif]-->')
 			.replace('%content%', content); // replace the column content back
@@ -266,9 +268,15 @@ Marker.prototype.addMsoConditions = function (table) {
 
 	var transformedTable = $.html(table)
 		.replace(/(<table(.*(responsive-table).*)><tbody>)/g,
-			'<!--[if !mso]><!----><div $2>\n<!-- <![endif]--><!--[if mso]>$1<![endif]-->')
+			'<!--[if !mso]><!---->\n' +
+			'<div $2>\n' +
+			'<!-- <![endif]--><!--[if mso]>\n'+
+			'$1\n' +
+			'<![endif]-->')
 		.replace(/(<\/tbody><\/table>)/g,
-			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!----></div><!-- <![endif]-->')
+			'<!--[if mso]>$1<![endif]--><!--[if !mso]><!---->\n' +
+			'</div>\n' +
+			'<!-- <![endif]-->')
 		.replace('%content%', content);
 
 	table.replaceWith(transformedTable);
